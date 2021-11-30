@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wt的小游戏</title>
+</head>
+
+<body>
+    <canvas id="app" style="border: 1px solid #eee"></canvas>
+    <script src="./index.js"></script>
+    <script src="./pattern.js"></script>
+    <script>
+        // 在这一行之前的内容不要改动
+        let width = 30
+        let height = 18
+        let mygame = new Game(width, height, 2)
+            // 在这里写你的代码
+        let human = mygame.create.human() //创建一个人类型的积木，它可以被操控
+        human.style = 'human'
+            // mygame.create.wall(0, 1)//0 代表这块墙的坐标 x，1代表他的坐标y
+
+        for (let i = 0; i <= 17; i++) {
+            mygame.create.wall(0, i)
+            mygame.create.wall(29, i)
+        }
+        for (let i = 0; i <= 29; i++) {
+            mygame.create.wall(i, 0)
+            mygame.create.wall(i, 17)
+        }
+        for (let i = 0; i <= 9; i++) {
+            mygame.create.wall(i, 7)
+        }
+        for (let i = 11; i <= 29; i++) {
+            mygame.create.wall(i, 3)
+        }
+        for (let i = 0; i <= 2; i++) {
+            mygame.create.wall(i, 13)
+        }
+        for (let i = 10; i <= 17; i++) {
+            mygame.create.wall(5, i)
+        }
+        for (let i = 3; i <= 5; i++) {
+            mygame.create.wall(i, 10)
+        }
+        for (let i = 25; i <= 29; i++) {
+            mygame.create.wall(i, 13)
+        }
+        human.x = 1
+        human.y = 1
+            // 在这一行之后的内容不要改动
+            //必须有人，他可以被操纵
+            //必须有墙，它无法被人穿越
+            //必须有空气，人可以在其中自由行动
+            //用空气类型创造星星
+        let star1 = mygame.create.air(28, 4)
+        star1.style = 'star'
+
+        //子弹
+
+        setInterval(function() {
+            let bullet = mygame.create.air(28, 1)
+            bullet.style = 'bullet'
+            bullet.automove.left(29, 4)
+                //可以在子弹移动时检测小人儿和子弹是否重叠呀！我们可以在每一枚子弹生成后对这枚子弹设置 move.after 函数
+            bullet.move.after = function() {
+                if (human.isoverlapping(bullet)) {
+                    mygame.over.lose()
+                }
+            }
+        }, 1000)
+        let gun = mygame.create.wall(28, 1)
+        gun.style = 'gun'
+        let fire1 = mygame.create.wall(14, 4)
+        fire1.style = 'fire'
+        let fire2 = mygame.create.wall(20, 4)
+
+        fire2.style = 'fire'
+        let star2 = mygame.create.air(27, 14)
+        star2.style = 'star'
+        let star3 = mygame.create.air(2, 14)
+        star3.style = 'star'
+            //飞来飞去的乌龟
+        let turtle = mygame.create.air(26, 4)
+        turtle.style = pattern.turtle
+        turtle.automove.left(14, 1, true)
+        turtle.move.after = function() {
+            if (human.isoverlapping(turtle)) {
+                mygame.over.lose()
+            }
+        }
+        human.move.after = function() {
+            if (human.istouched(firel)) {
+                mygame.over.lose()
+            }
+            if (human.istouched(fire2)) {
+                mygame.over.lose()
+            }
+            if (human.istouched(turtle)) {
+                mygame.over.lose()
+            }
+            if (human.isoverlapping(star1)) {
+                human.strengh = 5;
+                star1.remove()
+            }
+            if (human.isoverlapping(star2)) {
+                human.strengh = 5;
+                star1.remove()
+            }
+            if (human.isoverlapping(star3)) {
+                human.strengh = 5;
+                star1.remove()
+            }
+        }
+        let stone = mygame.create.wall(9, 13)
+        stone.style = 'stone'
+        stone.automove.right(16, 1, true)
+        let state = false
+        stone.move.after = function() {
+            if (state) {
+                human.x = stone.x
+                human.y = stone.y + 1
+            }
+        }
+        human.move.after = function() {
+            if (human.istouched(stone)) {
+                state = true
+
+            } else {
+                state = false
+            }
+        }
+    </script>
+</body>
+
+</html>
